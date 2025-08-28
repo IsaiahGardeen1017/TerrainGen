@@ -1,8 +1,16 @@
 {
   "tasks": {
-    "dev": "deno run --watch -A src/server.ts"
+    "dev": "deno run --watch=src/,src/static/,src/shaders/ -A src/server.ts"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1"
+  },
+  "fmt": {
+    "options": {
+      "useTabs": true,
+      "singleQuote": true,
+      "proseWrap": "never",
+      "lineWidth": 135
+    }
   }
 }

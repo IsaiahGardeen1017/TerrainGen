@@ -1,8 +1,10 @@
 import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { serveDir } from "https://deno.land/std@0.208.0/http/file_server.ts";
+import { BUILD_PATH, build, transpileShaders } from "./transpileShaders.ts";
 
 const PORT = 1000;
-const PUBLIC_DIR = "src/static"; // Directory where your static files are located
+
+await build();
 
 async function handler(req: Request): Promise<Response> {
   const pathname = new URL(req.url).pathname;
@@ -12,7 +14,7 @@ async function handler(req: Request): Promise<Response> {
   }
 
   return serveDir(req, {
-    fsRoot: PUBLIC_DIR,
+    fsRoot: BUILD_PATH,
     urlRoot: "",
   });
 }

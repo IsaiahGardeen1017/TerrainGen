@@ -1,12 +1,10 @@
-#version 300 es // *** ADD THIS LINE AT THE VERY TOP ***
+#version 300 es
 
 #ifdef GL_ES
 precision mediump float;
 #endif
 
 out vec4 fragColorOutput;
-
-// SHADER TOY COMPLIANT
 
 // ShaderToy uniforms
 uniform float iTime; // The elapsed time in seconds
