@@ -1,5 +1,21 @@
 //*******************************COMMON*******************************
 
+
+vec2 normalizeCoords(vec2 fragCoord){
+    float x = ((fragCoord.x / iResolution.y) + (iTime * timeFactor)) * scaleFactor;
+    float y = (fragCoord.y / iResolution.y) * scaleFactor;
+    return vec2(x,y);
+}
+
+float normalizePerlinNoise(float fl){
+    return (fl + 1.0) / 2.0;
+}
+
+
+//^^new^^
+//**old**
+
+
 // implementation of MurmurHash (https://sites.google.com/site/murmurhash/) for a 
 // single unsigned integer.
 

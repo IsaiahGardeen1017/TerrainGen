@@ -28,15 +28,8 @@ async function onload() {
 }
 
 async function establishShaderDisplay(shaderName) {
-    const sectionDiv = document.createElement('div');
-    sectionDiv.classList.add('section');
-    const canvasElement = document.createElement('canvas');
-
-    const sectionParent = document.getElementById('canvas-parent');
-    sectionParent.appendChild(sectionDiv);
-    sectionDiv.appendChild(canvasElement);
-    sectionParent.appendChild(document.createElement('hr'))
-
+    
+    const canvasElement = document.getElementById(shaderName);
     const gl = canvasElement.getContext('webgl2');
 
     if (!gl) {
@@ -58,6 +51,7 @@ async function establishShaderDisplay(shaderName) {
     const iResolutionLoc = gl.getUniformLocation(program, 'iResolution');
     const iTimeLoc = gl.getUniformLocation(program, 'iTime');
     const timeFactorLoc = gl.getUniformLocation(program, 'timeFactor');
+    const scaleFactorLoc = gl.getUniformLocation(program, 'scaleFactor');
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -86,6 +80,7 @@ async function establishShaderDisplay(shaderName) {
         gl.uniform2f(iResolutionLoc, gl.canvas.width, gl.canvas.height);
         gl.uniform1f(iTimeLoc, (Date.now() - startTime) * 0.001); // Time in seconds
         gl.uniform1f(timeFactorLoc, timeFactor); // Pass our slider value to the shader
+        gl.uniform1f(scaleFactorLoc, 1); // Pass our slider value to the shader
 
         // Draw the quad
         gl.drawArrays(gl.TRIANGLES, 0, 6);

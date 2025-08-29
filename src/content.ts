@@ -22,7 +22,11 @@ export const displays: ShaderDisplay[] = [
 		sliders: ['size'],
 	},
 	{
-		name: 'simple_perlin_noise',
+		name: 'perlin',
+		sliders: ['size'],
+	},
+	{
+		name: 'normal_perlin',
 		sliders: ['size'],
 	},
 ];

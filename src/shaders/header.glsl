@@ -12,5 +12,6 @@ uniform vec2 iResolution; // The viewport resolution (width, height)
 
 //Sliders and inputs
 uniform float timeFactor; // Our custom uniform for the slider
+uniform float scaleFactor; // Our custom uniform for the slider
 
 //***^^^^^^^^^^^^^^^^^^^^^^^^^^^^HEADER^^^^^^^^^^^^^^^^^^^^^^^^^^^^***
