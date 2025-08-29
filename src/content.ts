@@ -28,19 +28,27 @@ export const Content_Sliders: Record<Uniforms, UniformSlider> = {
 export type ShaderDisplay = {
 	name: string;
 	uniforms: Uniforms[];
+	text: string;
+	title: string;
 };
 
 export const Content_Displays: ShaderDisplay[] = [
 	{
 		name: 'grid_visualizer',
 		uniforms: ['timeFactor', 'scaleFactor'],
+		text: 'This is the grid we will use to demonstrate all the shaders below, each square is 1 unit',
+		title: 'Grid',
 	},
 	{
 		name: 'perlin',
-		uniforms: ['timeFactor'],
+		uniforms: [],
+		text: 'Here is basic perlin noise where negative values are mapped to read and positive values are mapped to green',
+		title: 'Perlin Noise',
 	},
 	{
 		name: 'normal_perlin',
-		uniforms: ['scaleFactor']
+		uniforms: ['scaleFactor'],
+		text: 'Here we normalize the output of the perlin noise function (-1 to 1) to a between 0 and 1, then feed that value into all color channels',
+		title: 'Perlin Noise',
 	},
 ];

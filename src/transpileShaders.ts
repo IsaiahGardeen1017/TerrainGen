@@ -108,7 +108,9 @@ function buildCanvasSection(display: ShaderDisplay): string {
 		return buildSlider(uniformId);
 	});
 	return html.replaceAll('{{@id}}', display.name)
-		.replace('{{@sliders}}', sliders.join('\n'));
+		.replace('{{@sliders}}', sliders.join('\n'))
+		.replaceAll('{{@title}}', display.title)
+		.replaceAll('{{@text}}', display.text);
 }
 
 async function format(): Promise<void> {
