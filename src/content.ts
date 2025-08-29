@@ -1,32 +1,46 @@
 export type UniformSlider = {
 	min: number;
 	max: number;
+	step: number;
+	title: string;
+	start: number;
 };
-export type Uniforms = 'size';
+export type Uniforms = 'scaleFactor' | 'timeFactor';
 
-export const sliders: Record<Uniforms, UniformSlider> = {
-	size: {
-		min: 0.1,
-		max: 10,
+
+export const Content_Sliders: Record<Uniforms, UniformSlider> = {
+	timeFactor: {
+		min: 0,
+		max: 2.0,
+		step: 0.01,
+		title: 'Time Factor',
+		start: 1
 	},
+	scaleFactor: {
+		min: 0.2,
+		max: 2.5,
+		step: 0.01,
+		title: 'Scale Factor',
+		start: 1
+	}
 };
 
 export type ShaderDisplay = {
 	name: string;
-	sliders: Uniforms[];
+	uniforms: Uniforms[];
 };
 
-export const displays: ShaderDisplay[] = [
+export const Content_Displays: ShaderDisplay[] = [
 	{
 		name: 'grid_visualizer',
-		sliders: ['size'],
+		uniforms: ['timeFactor', 'scaleFactor'],
 	},
 	{
 		name: 'perlin',
-		sliders: ['size'],
+		uniforms: ['timeFactor'],
 	},
 	{
 		name: 'normal_perlin',
-		sliders: ['size'],
+		uniforms: ['scaleFactor']
 	},
 ];

@@ -1,11 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
-    onload();
-});
-
 const startTime = Date.now();
 
 // Custom Uniforms
 let timeFactor = 0.1;
+
+const uniformIds = window.uniformIds;
+let unfValues = [];
+
+console.log(uniformIds);
+
+document.addEventListener('DOMContentLoaded', () => {
+    onload();
+});
 
 
 async function onload() {
@@ -13,17 +18,33 @@ async function onload() {
     const resp = await fetch('/content-displays.json');
     const shaders = await resp.json();
 
-    const timeSlider = document.getElementById("timeSlider");
-    const timeValueSpan = document.getElementById("timeValue");
-    timeSlider.addEventListener("input", (event) => {
-        timeFactor = parseFloat(event.target.value);
-        timeValueSpan.textContent = timeFactor.toFixed(2); // Display current value
-    });
-
-    console.log(shaders);
-
     for (let i = 0; i < shaders.length; i++) {
         await establishShaderDisplay(shaders[i].name);
+    }
+
+    setupSliders();
+}
+
+function setupSliders(){
+    for(let i = 0; i < uniformIds.length; i++){
+        const unfid = uniformIds[i];
+        const sliders = Array.from(document.getElementsByClassName(unfid + '_input'));
+        const spans = Array.from(document.getElementsByClassName(unfid + '_value'));
+        console.log(sliders);
+        sliders.forEach((slider) => {
+            slider.addEventListener("input", (event) => {
+                unfValues[i] = parseFloat(event.target.value);
+                spans.forEach((span) => {
+                    span.textContent = unfValues[i].toFixed(2);
+                });
+                sliders.forEach((s) => {
+                    if(s !== slider){
+                        console.log('wow oh wow')
+                        s.value = unfValues[i];
+                    }
+                });
+            })
+        });
     }
 }
 
@@ -47,11 +68,16 @@ async function establishShaderDisplay(shaderName) {
     if (!program) return;
     gl.useProgram(program);
 
-    //unfiforms
+    //shaderToy uniforms
     const iResolutionLoc = gl.getUniformLocation(program, 'iResolution');
     const iTimeLoc = gl.getUniformLocation(program, 'iTime');
-    const timeFactorLoc = gl.getUniformLocation(program, 'timeFactor');
-    const scaleFactorLoc = gl.getUniformLocation(program, 'scaleFactor');
+    
+    //Custom uniformLocs
+    let locs = [];
+    for(let i = 0; i < uniformIds.length; i++){
+        locs.push(gl.getUniformLocation(program, uniformIds[i]));
+        unfValues.push(1.0);
+    }
 
     const positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -76,11 +102,14 @@ async function establishShaderDisplay(shaderName) {
         gl.clearColor(0.0, 0.0, 0.0, 1.0);
         gl.clear(gl.COLOR_BUFFER_BIT);
 
-        // Set uniforms
+        // Set ShaderToy uniforms
         gl.uniform2f(iResolutionLoc, gl.canvas.width, gl.canvas.height);
         gl.uniform1f(iTimeLoc, (Date.now() - startTime) * 0.001); // Time in seconds
-        gl.uniform1f(timeFactorLoc, timeFactor); // Pass our slider value to the shader
-        gl.uniform1f(scaleFactorLoc, 1); // Pass our slider value to the shader
+
+        // Set custom uniforms
+        for(let i = 0; i < uniformIds.length; i++){
+            gl.uniform1f(locs[i], unfValues[i]);
+        }
 
         // Draw the quad
         gl.drawArrays(gl.TRIANGLES, 0, 6);

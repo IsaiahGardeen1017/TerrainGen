@@ -1,4 +1,4 @@
-import { displays, ShaderDisplay } from './content.ts';
+import { Content_Displays, ShaderDisplay, Content_Sliders, Uniforms, UniformSlider } from './content.ts';
 
 export const BUILD_PATH = './build';
 const srcPath = './src/static';
@@ -8,6 +8,7 @@ const dynPath = './src/dynamicHtml'
 
 
 const canvasSectionTemplate = Deno.readTextFileSync(dynPath + '/canvasSection.html');
+const sliderTemplate = Deno.readTextFileSync(dynPath + '/slider.html');
 
 export async function build(devmode: boolean) {
 	const startTime = Date.now();
@@ -24,7 +25,7 @@ export async function build(devmode: boolean) {
 
 
 function contentsToJson() {
-	Deno.writeTextFileSync(BUILD_PATH + '/content-displays.json', JSON.stringify(displays));
+	Deno.writeTextFileSync(BUILD_PATH + '/content-displays.json', JSON.stringify(Content_Displays));
 }
 
 export function copyStaticToBuild() {
@@ -73,18 +74,41 @@ export function transpileShaders() {
 function buildDynamicHTML(devmode: boolean) {
 	const index = Deno.readTextFileSync(dynPath + '/index.html');
 
-	const sectionHtmls = displays.map((display): string => {
+	const sectionHtmls = Content_Displays.map((display): string => {
 		return buildCanvasSection(display);
 	}).join('\n<hr/>\n');
+
 	const devmodeScript = devmode ? `<script src="devmode.js"></script>` : '';
-	const finalHtml = index.replace('{{@canvasSections}}', sectionHtmls).replace('@devmode', devmodeScript);
+
+	const uniformsScript = Deno.readTextFileSync(dynPath + '/uniformsScript.html')
+		.replace('{{@unifromsIds}}', Object.keys(Content_Sliders).join(`','`));
+
+
+	const finalHtml = index.replace('{{@canvasSections}}', sectionHtmls)
+		.replace('{{@devmode}}', devmodeScript)
+		.replace('{{@uniformsScript}}', uniformsScript);
 	Deno.writeTextFileSync(BUILD_PATH + '/index.html', finalHtml);
 }
 
 
+function buildSlider(id: Uniforms): string {
+	const slider = Content_Sliders[id];
+	let html = sliderTemplate;
+	return html.replaceAll('{{@title}}', slider.title)
+		.replaceAll('{{@min}}', slider.min + '')
+		.replaceAll('{{@max}}', slider.max + '')
+		.replaceAll('{{@id}}', id)
+		.replaceAll('{{@step}}', slider.step + '')
+		.replaceAll('{{@value}}', slider.start + '');
+}
+
 function buildCanvasSection(display: ShaderDisplay): string {
 	let html = canvasSectionTemplate;
-	return html.replaceAll('{{@id}}', display.name);
+	const sliders = display.uniforms.map((uniformId) => {
+		return buildSlider(uniformId);
+	});
+	return html.replaceAll('{{@id}}', display.name)
+		.replace('{{@sliders}}', sliders.join('\n'));
 }
 
 async function format(): Promise<void> {
