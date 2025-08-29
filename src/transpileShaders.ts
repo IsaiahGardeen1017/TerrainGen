@@ -82,7 +82,7 @@ function buildDynamicHTML(devmode: boolean) {
 	const devmodeScript = devmode ? `<script src="devmode.js"></script>` : '';
 
 	const uniformsScript = Deno.readTextFileSync(dynPath + '/uniformsScript.html')
-		.replace('{{@unifromsIds}}', Object.keys(Content_Sliders).join(`','`));
+		.replace('{{@uniformsIds}}', Object.keys(Content_Sliders).join(`','`));
 
 
 	const finalHtml = index.replace('{{@canvasSections}}', sectionHtmls)
@@ -105,8 +105,7 @@ function buildSlider(id: Uniforms): string {
 
 function buildCodeSnippet(code: string): string {
 	let html = codeSnippetTemplate;
-	html.replaceAll('{{@code}}', code);
-	return html;
+	return html.replaceAll('{{@code}}', code);
 }
 
 function buildCanvasSection(display: ShaderDisplay): string {
@@ -118,7 +117,7 @@ function buildCanvasSection(display: ShaderDisplay): string {
 		.replace('{{@sliders}}', sliders.join('\n'))
 		.replaceAll('{{@title}}', display.title)
 		.replaceAll('{{@text}}', display.text)
-		.replaceAll('{{@shader-code}}', Deno.readTextFileSync(`${shaderSrcPath}/mains/${display.id}.glsl`));
+		.replaceAll('{{@shader-code}}', buildCodeSnippet(Deno.readTextFileSync(`${shaderSrcPath}/mains/${display.id}.glsl`)));
 }
 
 async function format(): Promise<void> {

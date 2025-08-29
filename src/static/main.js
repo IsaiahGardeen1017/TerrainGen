@@ -18,8 +18,9 @@ async function onload() {
     const resp = await fetch('/content-displays.json');
     const shaders = await resp.json();
 
+    console.log('shaders', shaders);
     for (let i = 0; i < shaders.length; i++) {
-        await establishShaderDisplay(shaders[i].name);
+        await establishShaderDisplay(shaders[i].id);
     }
 
     setupSliders();
@@ -51,6 +52,7 @@ function setupSliders(){
 async function establishShaderDisplay(shaderName) {
     
     const canvasElement = document.getElementById(shaderName);
+    console.log(shaderName);
     const gl = canvasElement.getContext('webgl2');
 
     if (!gl) {
