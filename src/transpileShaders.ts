@@ -39,7 +39,7 @@ export function transpileShaders() {
         if (dirEntry.isFile) {
             const filepath = shaderSrcPath + '/mains/' + dirEntry.name;
             const contents = [header, common, Deno.readTextFileSync(filepath), footer].join('\n');
-            Deno.writeTextFileSync(shaderBldPath + '/' + dirEntry.name, contents);
+            Deno.writeTextFileSync(shaderBldPath + '/c_' + dirEntry.name, contents);
 
             const contentsShaderToy = [header, common, Deno.readTextFileSync(filepath)].join('\n');
             Deno.writeTextFileSync(shaderBldPath + '/_shadertoy_' + dirEntry.name, contentsShaderToy);

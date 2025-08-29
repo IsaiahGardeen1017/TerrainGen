@@ -39,8 +39,7 @@ async function establishShaderDisplay(shaderName) {
         alert('Unable to initialize WebGL 2.0. Your browser may not support it.');
         return;
     }
-
-    const fsSource = await loadShader(`shaders/${shaderName}.glsl`);
+    const fsSource = await loadShader(`shaders/c_${shaderName}.glsl`);
     const vsSource = await loadShader(`vertex_shader.glsl`);
 
     const vertexShader = compileShader(gl, vsSource, gl.VERTEX_SHADER);
