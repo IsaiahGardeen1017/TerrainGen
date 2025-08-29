@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     onload();
 });
 
-const shaders = ['basic', 'mars'];
 const startTime = Date.now();
 
 // Custom Uniforms
@@ -11,6 +10,9 @@ let timeFactor = 0.1;
 
 async function onload() {
 
+    const resp = await fetch('/content-displays.json');
+    const shaders = await resp.json();
+
     const timeSlider = document.getElementById("timeSlider");
     const timeValueSpan = document.getElementById("timeValue");
     timeSlider.addEventListener("input", (event) => {
@@ -18,8 +20,10 @@ async function onload() {
         timeValueSpan.textContent = timeFactor.toFixed(2); // Display current value
     });
 
+    console.log(shaders);
+
     for (let i = 0; i < shaders.length; i++) {
-        await establishShaderDisplay(shaders[i]);
+        await establishShaderDisplay(shaders[i].name);
     }
 }
 
