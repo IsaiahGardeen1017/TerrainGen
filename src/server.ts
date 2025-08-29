@@ -6,7 +6,7 @@ const PORT = 1000;
 let devmodeguid: string | undefined = undefined;
 
 
-await build();
+await build(true);
 
 async function handler(req: Request): Promise<Response> {
   const pathname = new URL(req.url).pathname;

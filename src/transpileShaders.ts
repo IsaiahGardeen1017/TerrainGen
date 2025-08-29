@@ -9,12 +9,12 @@ const dynPath = './src/dynamicHtml'
 
 const canvasSectionTemplate = Deno.readTextFileSync(dynPath + '/canvasSection.html');
 
-export async function build() {
+export async function build(devmode: boolean) {
 	const startTime = Date.now();
 	copyStaticToBuild();
 	transpileShaders();
 	contentsToJson();
-	buildDynamicHTML();
+	buildDynamicHTML(devmode);
 	await format();
 	const endTime = Date.now();
 	console.log(`Built in ${(endTime - startTime)}ms`);
@@ -70,13 +70,14 @@ export function transpileShaders() {
 }
 
 
-function buildDynamicHTML() {
+function buildDynamicHTML(devmode: boolean) {
 	const index = Deno.readTextFileSync(dynPath + '/index.html');
 
 	const sectionHtmls = displays.map((display): string => {
 		return buildCanvasSection(display);
 	}).join('\n<hr/>\n');
-	const finalHtml = index.replace('{{@canvasSections}}', sectionHtmls);
+	const devmodeScript = devmode ? `<script src="devmode.js"></script>` : '';
+	const finalHtml = index.replace('{{@canvasSections}}', sectionHtmls).replace('@devmode', devmodeScript);
 	Deno.writeTextFileSync(BUILD_PATH + '/index.html', finalHtml);
 }
 

@@ -1,9 +1,12 @@
 body {
     margin: 0;
+    /*
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    */
+
     /* Full viewport height */
     background-color: #222;
     font-family: Arial, sans-serif;
@@ -15,7 +18,7 @@ canvas {
 
     aspect-ratio: 16 / 9;
 
-    width: min(75vw, calc(75vh * (16 / 9)));
+    width: min(50vw, calc(50vh * (16 / 9)));
     height: auto;
 
     /* Remove extra space below canvas */
@@ -28,8 +31,15 @@ canvas {
 
 }
 
-section {
-    margin-top: 50px;
+.section {
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.details {
+    /* Here I want the details to be to the right of the canvas */
 }
 
 .controls {
