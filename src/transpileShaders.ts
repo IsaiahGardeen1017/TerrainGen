@@ -9,6 +9,7 @@ const dynPath = './src/dynamicHtml'
 
 const canvasSectionTemplate = Deno.readTextFileSync(dynPath + '/canvasSection.html');
 const sliderTemplate = Deno.readTextFileSync(dynPath + '/slider.html');
+const codeSnippetTemplate = Deno.readTextFileSync(dynPath + '/code-snippet.html');
 
 export async function build(devmode: boolean) {
 	const startTime = Date.now();
@@ -102,15 +103,22 @@ function buildSlider(id: Uniforms): string {
 		.replaceAll('{{@value}}', slider.start + '');
 }
 
+function buildCodeSnippet(code: string): string {
+	let html = codeSnippetTemplate;
+	html.replaceAll('{{@code}}', code);
+	return html;
+}
+
 function buildCanvasSection(display: ShaderDisplay): string {
 	let html = canvasSectionTemplate;
 	const sliders = display.uniforms.map((uniformId) => {
 		return buildSlider(uniformId);
 	});
-	return html.replaceAll('{{@id}}', display.name)
+	return html.replaceAll('{{@id}}', display.id)
 		.replace('{{@sliders}}', sliders.join('\n'))
 		.replaceAll('{{@title}}', display.title)
-		.replaceAll('{{@text}}', display.text);
+		.replaceAll('{{@text}}', display.text)
+		.replaceAll('{{@shader-code}}', Deno.readTextFileSync(`${shaderSrcPath}/mains/${display.id}.glsl`));
 }
 
 async function format(): Promise<void> {
