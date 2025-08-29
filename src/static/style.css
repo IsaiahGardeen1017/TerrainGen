@@ -1,0 +1,52 @@
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* Full viewport height */
+    background-color: #222;
+    font-family: Arial, sans-serif;
+    color: #eee;
+}
+
+canvas {
+    display: block;
+
+    aspect-ratio: 16 / 9;
+
+    width: min(75vw, calc(75vh * (16 / 9)));
+    height: auto;
+
+    /* Remove extra space below canvas */
+    /* Take up most of the screen height */
+    max-width: 1280px;
+    /* Optional: limit max width */
+    max-height: 720px;
+    /* Optional: limit max height */
+    border: 1px solid #555;
+
+}
+
+section {
+    margin-top: 50px;
+}
+
+.controls {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.control-group {
+    margin-bottom: 10px;
+}
+
+input[type="range"] {
+    width: 200px;
+}
+
+label {
+    margin-right: 10px;
+}
