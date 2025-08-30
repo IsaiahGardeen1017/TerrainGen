@@ -6,7 +6,7 @@ const whitespace = [' ', '/r', '/n'];
 const symbolArr = symbols.split('');
 const numberArr = numbers.split('');
 
-type Type = 'keyword' | 'symbol' | 'func' | 'var' | 'number';
+export type Type = 'keyword' | 'symbol' | 'func' | 'var' | 'number' | 'whitespace';
 export function addSyntaxHighlightSpans(glsl: string): string {
 	const tokens = tokenize(glsl);
 	return tokensToSpans(tokens);
@@ -14,29 +14,36 @@ export function addSyntaxHighlightSpans(glsl: string): string {
 
 function tokensToSpans(tokens: string[]): string {
 	const outStrs: string[] = [];
-
 	for (let i = 0; i < tokens.length; i++) {
-		let token = tokens[i];
-
-		if (whitespace.includes(token)) {
+		const token = tokens[i];
+		const tokenType = determineTokenType(tokens, i);
+		if (tokenType === 'whitespace') {
 			outStrs.push(token);
-		} else if (symbolArr.includes(token)) {
-			outStrs.push(span(token, 'symbol'));
-		} else if (numberArr.includes(token.charAt(0))) {
-			outStrs.push(span(token, 'number'));
-		} else if (keyWords.includes(token)) {
-			outStrs.push(span(token, 'keyword'));
-		} else if (i !== tokens.length && tokens[i + 1] === '(') {
-			outStrs.push(span(token, 'func'));
 		} else {
-			outStrs.push(span(token, 'var'));
+			outStrs.push(span(token, tokenType));
 		}
 	}
-
 	return outStrs.join('');
 }
 
-function tokenize(glsl: string): string[] {
+export function determineTokenType(tokens: string[], index: number): Type {
+	const token = tokens[index];
+	if (whitespace.includes(token)) {
+		return ('whitespace');
+	} else if (symbolArr.includes(token)) {
+		return ('symbol');
+	} else if (numberArr.includes(token.charAt(0))) {
+		return ('number');
+	} else if (keyWords.includes(token)) {
+		return ('keyword');
+	} else if (index !== tokens.length && tokens[index + 1] === '(') {
+		return ('func');
+	} else {
+		return ('var');
+	}
+}
+
+export function tokenize(glsl: string): string[] {
 	const textCharArr = glsl.split('');
 
 	let currWord = '';
