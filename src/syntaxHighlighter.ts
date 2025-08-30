@@ -7,7 +7,7 @@ const symbolArr = symbols.split('');
 const numberArr = numbers.split('');
 
 type Type = 'keyword' | 'symbol' | 'func' | 'var' | 'number';
-export function addSpansToGlslCode(glsl: string): string {
+export function addSyntaxHighlightSpans(glsl: string): string {
 	const tokens = tokenize(glsl);
 	return tokensToSpans(tokens);
 }

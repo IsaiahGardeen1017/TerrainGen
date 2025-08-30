@@ -1,5 +1,5 @@
 import { Content_Displays, Content_Sliders, ShaderDisplay, Uniforms, UniformSlider } from './content.ts';
-import { addSpansToGlslCode } from './tokenizer.ts';
+import { addSyntaxHighlightSpans } from './syntaxHighlighter.ts';
 
 export const BUILD_PATH = './build';
 const srcPath = './src/static';
@@ -98,7 +98,7 @@ function buildSlider(id: Uniforms): string {
 
 function buildCodeSnippet(id: string): string {
 	const code = Deno.readTextFileSync(`${shaderSrcPath}/mains/${id}.glsl`);
-	const tokenizedCode = addSpansToGlslCode(code);
+	const tokenizedCode = addSyntaxHighlightSpans(code);
 	let html = codeSnippetTemplate;
 	return html.replaceAll('{{@code}}', tokenizedCode);
 }
