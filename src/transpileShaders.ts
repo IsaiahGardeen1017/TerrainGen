@@ -1,11 +1,10 @@
-import { Content_Displays, ShaderDisplay, Content_Sliders, Uniforms, UniformSlider } from './content.ts';
+import { Content_Displays, Content_Sliders, ShaderDisplay, Uniforms, UniformSlider } from './content.ts';
+import { addSpansToGlslCode } from './tokenizer.ts';
 
 export const BUILD_PATH = './build';
 const srcPath = './src/static';
 const shaderSrcPath = './src/shaders';
-const dynPath = './src/dynamicHtml'
-
-
+const dynPath = './src/dynamicHtml';
 
 const canvasSectionTemplate = Deno.readTextFileSync(dynPath + '/canvasSection.html');
 const sliderTemplate = Deno.readTextFileSync(dynPath + '/slider.html');
@@ -21,9 +20,6 @@ export async function build(devmode: boolean) {
 	const endTime = Date.now();
 	console.log(`Built in ${(endTime - startTime)}ms`);
 }
-
-
-
 
 function contentsToJson() {
 	Deno.writeTextFileSync(BUILD_PATH + '/content-displays.json', JSON.stringify(Content_Displays));
@@ -55,7 +51,7 @@ export function transpileShaders() {
 	const shaderBldPath = BUILD_PATH + '/shaders';
 	try {
 		Deno.removeSync(shaderBldPath, { recursive: true });
-	} catch (e) { }
+	} catch (e) {}
 	Deno.mkdirSync(shaderBldPath);
 
 	const files = Deno.readDirSync(shaderSrcPath + '/mains');
@@ -71,7 +67,6 @@ export function transpileShaders() {
 	});
 }
 
-
 function buildDynamicHTML(devmode: boolean) {
 	const index = Deno.readTextFileSync(dynPath + '/index.html');
 
@@ -84,13 +79,11 @@ function buildDynamicHTML(devmode: boolean) {
 	const uniformsScript = Deno.readTextFileSync(dynPath + '/uniformsScript.html')
 		.replace('{{@uniformsIds}}', Object.keys(Content_Sliders).join(`','`));
 
-
 	const finalHtml = index.replace('{{@canvasSections}}', sectionHtmls)
 		.replace('{{@devmode}}', devmodeScript)
 		.replace('{{@uniformsScript}}', uniformsScript);
 	Deno.writeTextFileSync(BUILD_PATH + '/index.html', finalHtml);
 }
-
 
 function buildSlider(id: Uniforms): string {
 	const slider = Content_Sliders[id];
@@ -103,9 +96,11 @@ function buildSlider(id: Uniforms): string {
 		.replaceAll('{{@value}}', slider.start + '');
 }
 
-function buildCodeSnippet(code: string): string {
+function buildCodeSnippet(id: string): string {
+	const code = Deno.readTextFileSync(`${shaderSrcPath}/mains/${id}.glsl`);
+	const tokenizedCode = addSpansToGlslCode(code);
 	let html = codeSnippetTemplate;
-	return html.replaceAll('{{@code}}', code);
+	return html.replaceAll('{{@code}}', tokenizedCode);
 }
 
 function buildCanvasSection(display: ShaderDisplay): string {
@@ -117,14 +112,14 @@ function buildCanvasSection(display: ShaderDisplay): string {
 		.replace('{{@sliders}}', sliders.join('\n'))
 		.replaceAll('{{@title}}', display.title)
 		.replaceAll('{{@text}}', display.text)
-		.replaceAll('{{@shader-code}}', buildCodeSnippet(Deno.readTextFileSync(`${shaderSrcPath}/mains/${display.id}.glsl`)));
+		.replaceAll('{{@shader-code}}', buildCodeSnippet(display.id));
 }
 
 async function format(): Promise<void> {
-	const command = new Deno.Command("deno", {
-		args: ["fmt", BUILD_PATH],
-		stdout: "null",
-		stderr: "piped",
+	const command = new Deno.Command('deno', {
+		args: ['fmt', BUILD_PATH],
+		stdout: 'null',
+		stderr: 'piped',
 	});
 
 	const { code, success, stderr } = await command.output();
