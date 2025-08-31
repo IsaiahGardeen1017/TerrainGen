@@ -1,4 +1,5 @@
 import { Content_Displays, Content_Sliders, ShaderDisplay, Uniforms, UniformSlider } from './content.ts';
+import { getFunctions } from './grabShaderFunction.ts';
 import { addSyntaxHighlightSpans } from './syntaxHighlighter.ts';
 
 export const BUILD_PATH = './build';
@@ -9,6 +10,8 @@ const dynPath = './src/dynamicHtml';
 const canvasSectionTemplate = Deno.readTextFileSync(dynPath + '/canvasSection.html');
 const sliderTemplate = Deno.readTextFileSync(dynPath + '/slider.html');
 const codeSnippetTemplate = Deno.readTextFileSync(dynPath + '/code-snippet.html');
+
+const commonFunctions = getFunctions(Deno.readTextFileSync(shaderSrcPath + '/common.glsl'));
 
 export async function build(devmode: boolean) {
 	const startTime = Date.now();
@@ -96,8 +99,12 @@ function buildSlider(id: Uniforms): string {
 		.replaceAll('{{@value}}', slider.start + '');
 }
 
-function buildCodeSnippet(id: string): string {
+function buildCodeSnippetById(id: string): string {
 	const code = Deno.readTextFileSync(`${shaderSrcPath}/mains/${id}.glsl`);
+	return buildCodeSnippet(code);
+}
+
+function buildCodeSnippet(code: string): string {
 	const tokenizedCode = addSyntaxHighlightSpans(code);
 	let html = codeSnippetTemplate;
 	return html.replaceAll('{{@code}}', tokenizedCode);
@@ -108,11 +115,15 @@ function buildCanvasSection(display: ShaderDisplay): string {
 	const sliders = display.uniforms.map((uniformId) => {
 		return buildSlider(uniformId);
 	});
+	const includedFuncsFinalTest: string = display.functions.map((func) => {
+		return buildCodeSnippet(commonFunctions[func]);
+	}).join('');
 	return html.replaceAll('{{@id}}', display.id)
 		.replace('{{@sliders}}', sliders.join('\n'))
 		.replaceAll('{{@title}}', display.title)
 		.replaceAll('{{@text}}', display.text)
-		.replaceAll('{{@shader-code}}', buildCodeSnippet(display.id));
+		.replaceAll('{{@funcs-code}}', includedFuncsFinalTest)
+		.replaceAll('{{@shader-code}}', buildCodeSnippetById(display.id));
 }
 
 async function format(): Promise<void> {

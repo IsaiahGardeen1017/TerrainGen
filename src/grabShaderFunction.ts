@@ -1,16 +1,29 @@
-import { determineTokenType, tokenize, Type } from './syntaxHighlighter.ts';
+import { determineTokenType, span, tokenize, Type } from './syntaxHighlighter.ts';
 
-export function getFunctions(shader: string): Record<string,string> {
-	const funcs: Record<string,string> = {};
-    let currFunc = '';
-    let inFunc = false;
-    const tokens = tokenize(shader);
-    for(let i = 0; i < tokens.length){
-        const tokenType = determineTokenType(tokens, i);
-        if(tokenType === 'func'){
-            
-        }
-    }
+export function getFunctions(shader: string): Record<string, string> {
+	const funcs: Record<string, string> = {};
+	let currFunc: string[] = [];
+	let inFunc = false;
+	let funcName = '';
+	const tokens = tokenize(shader);
+	for (let i = 0; i < tokens.length; i++) {
+		const tokenType = determineTokenType(tokens, i);
+		if (tokenType === 'func') {
+			inFunc = true;
+			funcName = tokens[i];
+			currFunc.push(tokens[i - 2]);
+			currFunc.push(tokens[i - 1]);
+		}
+		if (inFunc) {
+			currFunc.push(tokens[i]);
+		}
+		if (inFunc && tokens[i] === '}') {
+			inFunc = false;
+			funcs[funcName] = currFunc.join('');
+			currFunc = [];
+			funcName = '';
+		}
+	}
 
-    return funcs;
+	return funcs;
 }

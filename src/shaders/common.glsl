@@ -1,20 +1,17 @@
 //*******************************COMMON*******************************
 
-
-vec2 normalizeCoords(vec2 fragCoord){
+vec2 normalizeCoords(vec2 fragCoord) {
     float x = ((fragCoord.x / iResolution.y) + (iTime * timeFactor)) * scaleFactor;
     float y = (fragCoord.y / iResolution.y) * scaleFactor;
-    return vec2(x,y);
+    return vec2(x, y);
 }
 
-float normalizePerlinNoise(float fl){
+float normalizePerlinNoise(float fl) {
     return (fl + 1.0) / 2.0;
 }
 
-
 //^^new^^
 //**old**
-
 
 // implementation of MurmurHash (https://sites.google.com/site/murmurhash/) for a 
 // single unsigned integer.
@@ -39,7 +36,7 @@ uint hash(uint x, uint seed) {
 // implementation of MurmurHash (https://sites.google.com/site/murmurhash/) for a  
 // 2-dimensional unsigned integer input vector.
 
-uint hash(uvec2 x, uint seed) {
+uint hash2(uvec2 x, uint seed) {
     const uint m = 0x5bd1e995U;
     uint hash = seed;
     // process first vector element
@@ -66,13 +63,13 @@ uint hash(uvec2 x, uint seed) {
 vec2 gradientDirection(uint hash) {
     switch(int(hash) & 3) { // look at the last two bits to pick a gradient direction
         case 0:
-            return vec2(1.0f, 1.0f);
+            return vec2(1.0, 1.0);
         case 1:
-            return vec2(-1.0f, 1.0f);
+            return vec2(-1.0, 1.0);
         case 2:
-            return vec2(1.0f, -1.0f);
+            return vec2(1.0, -1.0);
         case 3:
-            return vec2(-1.0f, -1.0f);
+            return vec2(-1.0, -1.0);
     }
 }
 
@@ -82,17 +79,17 @@ float interpolate(float value1, float value2, float value3, float value4, vec2 t
 
 vec2 fade(vec2 t) {
     // 6t^5 - 15t^4 + 10t^3
-    return t * t * t * (t * (t * 6.0f - 15.0f) + 10.0f);
+    return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
 }
 
 float perlinNoise(vec2 position, uint seed) {
     vec2 floorPosition = floor(position);
     vec2 fractPosition = position - floorPosition;
     uvec2 cellCoordinates = uvec2(floorPosition);
-    float value1 = dot(gradientDirection(hash(cellCoordinates, seed)), fractPosition);
-    float value2 = dot(gradientDirection(hash((cellCoordinates + uvec2(1, 0)), seed)), fractPosition - vec2(1.0f, 0.0f));
-    float value3 = dot(gradientDirection(hash((cellCoordinates + uvec2(0, 1)), seed)), fractPosition - vec2(0.0f, 1.0f));
-    float value4 = dot(gradientDirection(hash((cellCoordinates + uvec2(1, 1)), seed)), fractPosition - vec2(1.0f, 1.0f));
+    float value1 = dot(gradientDirection(hash2(cellCoordinates, seed)), fractPosition);
+    float value2 = dot(gradientDirection(hash2((cellCoordinates + uvec2(1, 0)), seed)), fractPosition - vec2(1.0, 0.0));
+    float value3 = dot(gradientDirection(hash2((cellCoordinates + uvec2(0, 1)), seed)), fractPosition - vec2(0.0, 1.0));
+    float value4 = dot(gradientDirection(hash2((cellCoordinates + uvec2(1, 1)), seed)), fractPosition - vec2(1.0, 1.0));
     return interpolate(value1, value2, value3, value4, fade(fractPosition));
 }
 

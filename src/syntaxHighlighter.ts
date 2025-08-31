@@ -78,6 +78,9 @@ export function tokenize(glsl: string): string[] {
 	return words;
 }
 
-function span(value: string, type: Type) {
+export function span(value: string, type: Type) {
+	if (type === 'whitespace') {
+		return value;
+	}
 	return `<span class="code-${type}">${value}</span>`;
 }
