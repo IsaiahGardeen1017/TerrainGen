@@ -97,4 +97,28 @@ float noise(vec2 position) {
     return perlinNoise(position, 1u);
 }
 
+
+
+vec3 mapPerlinToColor(float value) {
+    vec3 deepWaterColor = vec3(0.074, 0.258, 0.345);
+    vec3 shallowWaterColor = vec3(0.345, 0.714, 0.788);
+    vec3 lowGroundColor = vec3(0.118, 0.471, 0.184);
+    vec3 highGroundColor = vec3(0.506, 0.624, 0.259);
+
+    if(value < 0.5) {
+        // Ocean
+        return mix(deepWaterColor, shallowWaterColor, value * 2.0);
+    } else {
+        // Land
+        return mix(lowGroundColor, highGroundColor, (value - 0.5) * 2.0);
+    }
+}
+
+float perlinOctave(vec2 position, float frequency, float amplitude, uint seed){
+    float pl = perlinNoise(position * frequency, seed);
+    float npl = (pl + 1.0) / 2.0;
+    return npl * amplitude;
+}
+
+
 //***^^^^^^^^^^^^^^^^^^^^^^^^^^^^COMMON^^^^^^^^^^^^^^^^^^^^^^^^^^^^***

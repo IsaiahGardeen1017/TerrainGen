@@ -54,7 +54,7 @@ export function transpileShaders() {
 	const shaderBldPath = BUILD_PATH + '/shaders';
 	try {
 		Deno.removeSync(shaderBldPath, { recursive: true });
-	} catch (e) {}
+	} catch (e) { }
 	Deno.mkdirSync(shaderBldPath);
 
 	const files = Deno.readDirSync(shaderSrcPath + '/mains');
@@ -76,6 +76,8 @@ function buildDynamicHTML(devmode: boolean) {
 	const sectionHtmls = Content_Displays.map((display): string => {
 		return buildCanvasSection(display);
 	}).join('\n<hr/>\n');
+
+
 
 	const devmodeScript = devmode ? `<script src="devmode.js"></script>` : '';
 
@@ -105,9 +107,14 @@ function buildCodeSnippetById(id: string): string {
 }
 
 function buildCodeSnippet(code: string): string {
-	const tokenizedCode = addSyntaxHighlightSpans(code);
-	let html = codeSnippetTemplate;
-	return html.replaceAll('{{@code}}', tokenizedCode);
+	try {
+		const tokenizedCode = addSyntaxHighlightSpans(code);
+		let html = codeSnippetTemplate;
+		return html.replaceAll('{{@code}}', tokenizedCode);
+	} catch (err) {
+		console.warn(`Could not parse ${code}`	);
+		throw err;
+	}
 }
 
 function buildCanvasSection(display: ShaderDisplay): string {
@@ -116,7 +123,13 @@ function buildCanvasSection(display: ShaderDisplay): string {
 		return buildSlider(uniformId);
 	});
 	const includedFuncsFinalTest: string = display.functions.map((func) => {
-		return buildCodeSnippet(commonFunctions[func]);
+		try {
+			return buildCodeSnippet(commonFunctions[func]);
+		} catch (err) {
+			console.warn(`Error with ${display.id}, (func: ${func})`);
+			console.warn(commonFunctions);
+			throw err;
+		}
 	}).join('');
 	return html.replaceAll('{{@id}}', display.id)
 		.replace('{{@sliders}}', sliders.join('\n'))

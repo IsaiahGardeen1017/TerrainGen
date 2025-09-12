@@ -50,7 +50,7 @@ export const Content_Displays: ShaderDisplay[] = [
 	{
 		id: 'perlin',
 		uniforms: [],
-		text: 'Here is basic perlin noise where negative values are mapped to read and positive values are mapped to green',
+		text: 'Here is basic perlin noise where negative values are mapped to red and positive values are mapped to green',
 		title: 'Perlin Noise',
 		functions: ['perlinNoise'],
 	},
@@ -61,5 +61,21 @@ export const Content_Displays: ShaderDisplay[] = [
 			'Here we normalize the output of the perlin noise function (-1 to 1) to a between 0 and 1, then feed that value into all color channels',
 		title: 'Perlin Noise',
 		functions: ['normalizePerlinNoise'],
+	},
+	{
+		id: 'basic_color_map',
+		uniforms: [],
+		text:
+			'Now we can set thresholds for certain values, if normalize perlin noise is less than 0.5 we will output a shade of blue, if it more than 0.5 we output a shade of green.  We can then use the mix() function to get a gradient dependant on the noise, which will represent height',
+		title: 'Basic Terrain',
+		functions: ['mapPerlinToColor'],
+	},
+	{
+		id: 'octaves',
+		uniforms: [],
+		text:
+			'Something about octaves',
+		title: 'Octaves',
+		functions: [],
 	},
 ];

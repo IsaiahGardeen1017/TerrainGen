@@ -1,7 +1,7 @@
-const symbols = '(),{}=+-.;';
+const symbols = '(),{}=+-.;/';
 const numbers = '123456890';
 
-const keyWords = ['void', 'vec4', 'vec3', 'vec2', 'out', 'in', 'flaot'];
+const keyWords = ['void', 'vec4', 'vec3', 'vec2', 'out', 'in', 'float', 'int', 'return', 'switch', 'mix', 'if', 'else'];
 const whitespace = [' ', '/r', '/n'];
 const symbolArr = symbols.split('');
 const numberArr = numbers.split('');
@@ -30,7 +30,7 @@ export function determineTokenType(tokens: string[], index: number): Type {
 	const token = tokens[index];
 	if (whitespace.includes(token)) {
 		return ('whitespace');
-	} else if (symbolArr.includes(token)) {
+	}else if (symbolArr.includes(token)) {
 		return ('symbol');
 	} else if (numberArr.includes(token.charAt(0))) {
 		return ('number');
@@ -45,6 +45,7 @@ export function determineTokenType(tokens: string[], index: number): Type {
 
 export function tokenize(glsl: string): string[] {
 	const textCharArr = glsl.split('');
+
 
 	let currWord = '';
 
